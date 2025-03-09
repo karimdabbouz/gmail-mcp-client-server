@@ -1,0 +1,5 @@
+token.pickle
+credentials.json
+.env
+newsletter-summary-agent.code-workspace
+**/venv-gmail-mcp-server/
