@@ -71,7 +71,7 @@ def extract_mail_content(message):
     
 
 @mcp.tool()
-async def list_messages(q: str, max_results: int) -> str:
+async def get_message_ids(q: str, max_results: int) -> str:
     '''
     Lists the message IDs from the user's inbox specified by the query.
 
@@ -84,14 +84,16 @@ async def list_messages(q: str, max_results: int) -> str:
 
 
 @mcp.tool()
-async def get_messages_for_ids(ids: List[str]) -> str:
+async def get_message_content(q: str, max_results: int) -> str:
     '''
-    Gets the content of one or more messages specified by their message ID.
+    Returns the content of the messages specified by the query parameter.
 
     Args:
-        ids: The list with one or more IDs for which to retrieve the message content
+        q: Query in the same format as in the Gmail search box
+        max_results: The maximum number of messages to return
     '''
     content = ''
+    ids = gmail_mcp_server.service.users().messages().list(userId='me', maxResults=max_results, q=q).execute()
     for id in ids:
         message = gmail_mcp_server.service.users().messages().get(userId='me', id=id).execute()
         content += extract_mail_content(message)
@@ -100,11 +102,6 @@ async def get_messages_for_ids(ids: List[str]) -> str:
 
 if __name__ == '__main__':
     gmail_mcp_server = GmailMCPServer()
-    # for msg_id in ['19566b406fc769b2', '19562445ce749209']:
-    #     message = gmail_mcp_server.service.users().messages().get(userId='me', id=msg_id).execute()
-    #     body = extract_mail_content(message)
-    #     print('##################################################################')
-    #     print(body)
     mcp.run(transport='stdio')
 
 
